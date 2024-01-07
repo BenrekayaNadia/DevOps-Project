@@ -4,6 +4,6 @@ services:
     image: nediabenrekaya/devops-project
     container_name: devops-project-1
     volumes:
-      - ./mydatabase.db:/usr/src/app/mydatabase.db
+      - ./mydatabase.db:/app/mydatabase.db
     ports:
       - "3000:3000"
