@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS_USR = credentials('dh_crede')
+        registryCredentials = "dh_crede"
+
     }
 
     triggers {
