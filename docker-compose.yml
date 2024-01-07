@@ -2,8 +2,8 @@ version: '3'
 services:
 app:
 image: nediabenrekaya/devops-project
-container_name: devops-project
+container_name: devops-project-1
 volumes:
-- ./mydatabase.db:/usr/src/app/mydatabase.db
+  - ./mydatabase.db:/usr/src/app/mydatabase.db
 ports:
-- "3000:3000"
+  - "3000:3000"
