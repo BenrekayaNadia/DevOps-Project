@@ -18,16 +18,21 @@ pipeline {
         }
 
         stage('Init') {
-            steps {
-                // Use the withCredentials block for a cleaner approach
-                withCredentials([string(credentialsId: 'dh_crede', variable: 'DOCKERHUB_CREDENTIALS_PSW'),
-                                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'dh_crede', usernameVariable: 'DOCKERHUB_CREDENTIALS_USR', passwordVariable: 'DOCKERHUB_CREDENTIALS_PSW']]) {
-                    echo "DOCKERHUB_CREDENTIALS_USR: $DOCKERHUB_CREDENTIALS_USR"
-                    echo "DOCKERHUB_CREDENTIALS_PSW: $DOCKERHUB_CREDENTIALS_PSW"
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                }
+    steps {
+        script {
+            def dockerhub_credentials = credentials('dh_crede')
+            withCredentials([dockerUsernamePassword(credentialsId: 'dh_crede', usernameVariable: 'DOCKERHUB_CREDENTIALS_USR', passwordVariable: 'DOCKERHUB_CREDENTIALS_PSW')]) {
+                echo "DOCKERHUB_CREDENTIALS_USR: $DOCKERHUB_CREDENTIALS_USR"
+                echo "DOCKERHUB_CREDENTIALS_PSW: $DOCKERHUB_CREDENTIALS_PSW"
+
+                def loginCmd = "docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW"
+                echo "Running: $loginCmd"
+                sh "$loginCmd"
             }
         }
+    }
+}
+
 
         stage('Build') {
             steps {
