@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        registryCredentials = "dh_crede"
+        DOCKERHUB_CREDENTIALS=credentials('dh_crede')
 
     }
 
