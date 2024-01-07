@@ -1,23 +1,48 @@
 pipeline {
-     agent none
+    agent any
+
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dh_crede')
+        DOCKERHUB_CREDENTIALS_USR = credentials('dh_crede')
     }
+
+    triggers {
+        pollSCM('*/5 * * * *')
+    }
+
     stages {
-        stage('Checkout'){
+        stage('Checkout') {
             agent any
-            steps{
+            steps {
                 checkout scm
             }
         }
 
-        stage('Init'){
-            agent any
+        stage('Init') {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                script {
+                    def dockerhub_credentials = credentials('dh_crede')
+                    withCredentials([dockerUsernamePassword(credentialsId: 'dh_crede', usernameVariable: 'DOCKERHUB_CREDENTIALS_USR', passwordVariable: 'DOCKERHUB_CREDENTIALS_PSW'),
+                                     usernamePassword(credentialsId: 'docker-login-creds', usernameVariable: 'username', passwordVariable: 'password')]) {
+                        echo "DOCKERHUB_CREDENTIALS_USR: $DOCKERHUB_CREDENTIALS_USR"
+                        echo "DOCKERHUB_CREDENTIALS_PSW: $DOCKERHUB_CREDENTIALS_PSW"
+
+                        // Use sudo only for Docker login
+                        def loginCmd = "echo '${DOCKERHUB_CREDENTIALS_PSW}' | sudo docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
+                        echo "Running: $loginCmd"
+                        sh "$loginCmd"
+
+                        // Additional Docker login
+                        sh '''
+                            echo "${password}" | sudo docker login -u ${username} --password-stdin
+                            sudo docker stop docker_image
+                            sudo docker rm docker_image
+                            sudo docker pull docker_image:latest
+                            sudo docker run -d -p 80:80 --name docker-image-name -t docker_image:latest
+                        '''
+                    }
+                }
             }
         }
-
 
         stage('Build') {
             steps {
