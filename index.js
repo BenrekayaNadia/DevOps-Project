@@ -7,7 +7,7 @@ const Governorat=require('./schemas/gouvernorat');
 const Administration=require('./schemas/administration');
 const Ecolepublic=require('./schemas/ecolepublic');
 var bodyParser = require('body-parser');
-mongoose.connect("mongodb://127.0.0.1:27017/dbclassquiz", { useNewUrlParser: true }
+mongoose.connect("mongodb://mongo:27017/dbclassquiz", { useNewUrlParser: true }
 ).then(()=>{
   console.log("connected");
 }).catch((e)=>console.log(e));

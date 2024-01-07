@@ -3,7 +3,20 @@ services:
   app:
     image: nediabenrekaya/devops-project
     container_name: devops-project-1
-    volumes:
-      - ./mydatabase.db:/app/mydatabase.db
+
+    #volumes:
+     # - ./mydatabase.db:/app/mydatabase.db
     ports:
       - "3000:3000"
+  mongo:
+    container_name: mongo
+    image: mongo:4.4.0
+  
+    environment:
+      MONGO_DB: dbclassquiz
+    ports:
+      - "27018:27017"
+    expose:
+      - "27018"
+    #volumes:
+     # - ./data/outputpublic.csv:/data/db
