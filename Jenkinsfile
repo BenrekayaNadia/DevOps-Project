@@ -1,47 +1,23 @@
 pipeline {
-    agent any
-
+     agent none
     environment {
-        DOCKERHUB_CREDENTIALS_USR = credentials('dh_crede')
+        DOCKERHUB_CREDENTIALS = credentials('dh_crede')
     }
-
-    triggers {
-        pollSCM('*/5 * * * *')
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Checkout'){
             agent any
-            steps {
+            steps{
                 checkout scm
             }
         }
 
-        stage('Init') {
+        stage('Init'){
+            agent any
             steps {
-                script {
-                    def dockerhub_credentials = credentials('dh_crede')
-                    withCredentials([dockerUsernamePassword(credentialsId: 'dh_crede', usernameVariable: 'DOCKERHUB_CREDENTIALS_USR', passwordVariable: 'DOCKERHUB_CREDENTIALS_PSW'),
-                                     usernamePassword(credentialsId: 'docker-login-creds', usernameVariable: 'username', passwordVariable: 'password')]) {
-                        echo "DOCKERHUB_CREDENTIALS_USR: $DOCKERHUB_CREDENTIALS_USR"
-                        echo "DOCKERHUB_CREDENTIALS_PSW: $DOCKERHUB_CREDENTIALS_PSW"
-
-                        def loginCmd = "docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW"
-                        echo "Running: $loginCmd"
-                        sh "$loginCmd"
-
-                        // Additional Docker login
-                        sh '''
-                            echo "${password}" | docker login -u ${username} --password-stdin
-                            docker stop docker_image
-                            docker rm docker_image
-                            docker pull docker_image:latest
-                            docker run -d -p 80:80 --name docker-image-name -t docker_image:latest
-                        '''
-                    }
-                }
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
+
 
         stage('Build') {
             steps {
