@@ -1,10 +1,10 @@
 apiVersion: apps/v1
-  kind: Deployment
-  metadata:
+kind: Deployment
+metadata:
     name: devops-project
     labels:
       app: devops-project
-  spec:
+spec:
     selector:
       matchLabels:
         app: devops-project
