@@ -32,6 +32,12 @@ pipeline {
                 sh 'docker push $DOCKERHUB_CREDENTIALS_USR/devops-project:$BUILD_ID'
             }
         }
+        stage('Cleanup'){
+steps {
+sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/devops-project:$BUILD_ID'
+sh 'docker logout'
+}
+}
 
         
     }
