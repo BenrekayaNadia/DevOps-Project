@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        // Use lowercase variable names for consistency
-        dockerhub_credentials = credentials('dh_crede')
+        // Define the DOCKERHUB_CREDENTIALS_USR environment variable
+        DOCKERHUB_CREDENTIALS_USR = 'nediabenrekaya'
     }
 
     triggers {
