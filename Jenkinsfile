@@ -26,11 +26,18 @@ pipeline {
         }
 
         stage('Deliver') {
-            steps {
-                echo "Pushing Docker image..."
-                sh 'docker push $DOCKERHUB_CREDENTIALS_USR/devops-project:$BUILD_ID'
+    steps {
+        echo "Pushing Docker image..."
+        script {
+            def pushCmd = "docker push $DOCKERHUB_CREDENTIALS_USR/devops-project:$BUILD_ID"
+            try {
+                sh pushCmd
+            } catch (Exception e) {
+                error "Failed to push Docker image. Error: ${e.message}"
             }
         }
+    }
+}
 
         stage('Cleanup') {
             steps {
