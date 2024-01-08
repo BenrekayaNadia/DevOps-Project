@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS=credentials('cred')
-
+        DOCKERHUB_CREDENTIALS = credentials('cred')
+        DOCKERHUB_CREDENTIALS_USR = "${DOCKERHUB_CREDENTIALS_USR}"
+        BUILD_ID = "${BUILD_ID}"
     }
 
     triggers {
@@ -12,12 +13,10 @@ pipeline {
 
     stages {
         stage('Checkout') {
-           
             steps {
                 checkout scm
             }
         }
-
 
         stage('Build') {
             steps {
@@ -32,13 +31,13 @@ pipeline {
                 sh 'docker push $DOCKERHUB_CREDENTIALS_USR/devops-project:$BUILD_ID'
             }
         }
-        stage('Cleanup'){
-steps {
-sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/devops-project:$BUILD_ID'
-sh 'docker logout'
-}
-}
 
-        
+        stage('Cleanup') {
+            steps {
+                echo "Cleaning up..."
+                sh 'docker rmi $DOCKERHUB_CREDENTIALS_USR/devops-project:$BUILD_ID'
+                sh 'docker logout'
+            }
+        }
     }
 }
