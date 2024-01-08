@@ -33,7 +33,8 @@ pipeline {
             try {
                 sh pushCmd
             } catch (Exception e) {
-                error "Failed to push Docker image. Error: ${e.message}"
+                echo "Error details: ${e.getMessage()}"
+                error "Failed to push Docker image."
             }
         }
     }
